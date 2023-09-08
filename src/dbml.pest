@@ -2,77 +2,76 @@ File = { SOI ~ DBML+ ~ space ~ EOI }
 
 DBML = _{ Comment | Project | Table | TableGroup | Ref | Enum | NewLine }
 
-Project = { space ~ ^"Project" ~ space ~ ProjectName? ~ whitespace ~ "{" ~ whitespace ~ Options ~ Comment? ~ whitespace ~ "}" }
+Project     = { space ~ ^"Project" ~ space ~ ProjectName? ~ whitespace ~ "{" ~ whitespace ~ Options ~ Comment? ~ whitespace ~ "}" }
 ProjectName = { Name }
 
 Schema = { Name }
 
-Table = { space ~ ^"Table" ~ space ~ TableName ~ space ~ TableAlias? ~ space ~ TableSettings? ~ whitespace ~ "{" ~ whitespace ~ TableItems ~ Comment? ~ whitespace ~ "}" }
-TableName = { SchemaTableName | SimpleTableName }
+Table           = { space ~ ^"Table" ~ space ~ TableName ~ space ~ TableAlias? ~ space ~ TableSettings? ~ whitespace ~ "{" ~ whitespace ~ TableItems ~ Comment? ~ whitespace ~ "}" }
+TableName       = { SchemaTableName | SimpleTableName }
 SchemaTableName = { Schema ~ space ~ "." ~ space ~ Name }
 SimpleTableName = { Name }
-TableAlias = { ^"as" ~ space ~ Name }
-TableItems = { TableItem ~ (whitespace ~ TableItem)* }
-TableItem = { Comment | Column | Indices | Option }
-TableSettings = { Settings }
+TableAlias      = { ^"as" ~ space ~ Name }
+TableItems      = { TableItem ~ (whitespace ~ TableItem)* }
+TableItem       = { Comment | Column | Indices | Option }
+TableSettings   = { Settings }
 
-Column = { ColumnName ~ space ~ ColumnType ~ space ~ Settings? }
+Column     = { ColumnName ~ space ~ ColumnType ~ space ~ Settings? }
 ColumnName = { Name }
 ColumnType = { Type ~ ("(" ~ RawName? ~ ")")? }
 
-Indices = { ^"Indexes" ~ whitespace ~ "{" ~ whitespace ~ IndicesList ~ Comment? ~ whitespace ~ "}" }
-IndicesList = { IndexItem ~ (whitespace ~ IndexItem)* }
-IndexItem = { Comment | Index }
-Index = { (ColumnName | CompositeIndex) ~ space ~ Settings? ~ Comment? }
-CompositeIndex = { "(" ~ CompositeIndexEntry ~ (space ~ "," ~ space ~ CompositeIndexEntry)* ~ ")" }
+Indices             = { ^"Indexes" ~ whitespace ~ "{" ~ whitespace ~ IndicesList ~ Comment? ~ whitespace ~ "}" }
+IndicesList         = { IndexItem ~ (whitespace ~ IndexItem)* }
+IndexItem           = { Comment | Index }
+Index               = { (ColumnName | CompositeIndex) ~ space ~ Settings? ~ Comment? }
+CompositeIndex      = { "(" ~ CompositeIndexEntry ~ (space ~ "," ~ space ~ CompositeIndexEntry)* ~ ")" }
 CompositeIndexEntry = { ColumnName }
 
-TableGroup = { ^"TableGroup" ~ space ~ Name ~ whitespace ~ "{" ~ whitespace ~ TableGroupItems ~ Comment? ~ whitespace ~ "}" }
+TableGroup      = { ^"TableGroup" ~ space ~ Name ~ whitespace ~ "{" ~ whitespace ~ TableGroupItems ~ Comment? ~ whitespace ~ "}" }
 TableGroupItems = { TableGroupItem ~ (whitespace ~ TableGroupItem)* }
-TableGroupItem = { Comment | TableName }
+TableGroupItem  = { Comment | TableName }
 
-Ref = { ^"Ref" ~ space ~ Name? ~ space ~ ":" ~ space ~ RefFull ~ Cardinality ~ RefFull ~ space ~ Settings? ~ Comment? }
-RefFull = { (SchemaTableName ~ "." | SimpleTableName ~ ".") ~ RefColumns }
-RefColumns = { ColumnName | CompositeKey }
-Cardinality = { "-" | "<>" | ">" | "<" }
+Ref          = { ^"Ref" ~ space ~ Name? ~ space ~ ":" ~ space ~ RefFull ~ Cardinality ~ RefFull ~ space ~ Settings? ~ Comment? }
+RefFull      = { (SchemaTableName ~ "." | SimpleTableName ~ ".") ~ RefColumns }
+RefColumns   = { ColumnName | CompositeKey }
+Cardinality  = { "-" | "<>" | ">" | "<" }
 CompositeKey = { "(" ~ ColumnName ~ (space ~ "," ~ space ~ ColumnName)* ~ ")" }
 
-Enum = { space ~ ^"Enum" ~ space ~ Name ~ whitespace ~ "{" ~ whitespace ~ EnumValues ~ Comment? ~ whitespace ~ "}" }
+Enum       = { space ~ ^"Enum" ~ space ~ Name ~ whitespace ~ "{" ~ whitespace ~ EnumValues ~ Comment? ~ whitespace ~ "}" }
 EnumValues = { EnumValue ~ (whitespace ~ EnumValue)* }
-EnumValue = { Name ~ space ~ Settings? | Comment }
+EnumValue  = { Name ~ space ~ Settings? | Comment }
 
-Type = { RawNameArray | DoubleQuotedName | SingleQuotedName }
-Name = { RawName | DoubleQuotedName | SingleQuotedName }
-RawNameArray = @{ AlphaOrUnderscore+ ~ ("[]")* }
-RawName = @{ AlphaOrUnderscore+ }
-DoubleQuotedName = { "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
-SingleQuotedName = { "'" ~ (!"'" ~ ANY)* ~ "'" }
+Type             =  { RawNameArray | DoubleQuotedName | SingleQuotedName }
+Name             =  { RawName | DoubleQuotedName | SingleQuotedName }
+RawNameArray     = @{ AlphaOrUnderscore+ ~ ("[]")* }
+RawName          = @{ AlphaOrUnderscore+ }
+DoubleQuotedName =  { "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+SingleQuotedName =  { "'" ~ (!"'" ~ ANY)* ~ "'" }
 
-String = { MultiLineString | SingleQuotedString | DoubleQuotedString }
-MultiLineString = { "'''" ~ (!"'''" ~ ANY)* ~ "'''" }
+String             = { MultiLineString | SingleQuotedString | DoubleQuotedString }
+MultiLineString    = { "'''" ~ (!"'''" ~ ANY)* ~ "'''" }
 SingleQuotedString = { "'" ~ (!"'" ~ ANY)* ~ "'" }
 DoubleQuotedString = { "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
 
-Comment = { SingleLineComment | MultiLineComment }
+Comment           = { SingleLineComment | MultiLineComment }
 SingleLineComment = { space? ~ "//" ~ (!("\n" | "\r") ~ ANY)* }
-MultiLineComment = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+MultiLineComment  = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
-Settings = { "[" ~ SettingsPairs ~ "]" }
-SettingsPairs = { Setting ~ (space ~ "," ~ space ~ Setting)* }
-Setting = { SettingKey ~ SettingPredicate? }
-SettingKey = { (!("," | ":" | "]") ~ ANY)+ }
-SettingPredicate = { SettingSeparator ~ SettingValue }
+Settings         =  { "[" ~ SettingsPairs ~ "]" }
+SettingsPairs    =  { Setting ~ (space ~ "," ~ space ~ Setting)* }
+Setting          =  { SettingKey ~ SettingPredicate? }
+SettingKey       =  { (!("," | ":" | "]") ~ ANY)+ }
+SettingPredicate =  { SettingSeparator ~ SettingValue }
 SettingSeparator = _{ space ~ ":" ~ space }
-SettingValue = { String | Function | (!("," | "]") ~ ANY)+ }
-Function = { "`" ~ (!"`" ~ ANY)* ~ "`" }
+SettingValue     =  { String | Function | (!("," | "]") ~ ANY)+ }
+Function         =  { "`" ~ (!"`" ~ ANY)* ~ "`" }
 
-Options = { Option ~ (whitespace ~ Option)* }
-Option = { OptionKey ~ space ~ ":" ~ space ~ OptionValue }
-OptionKey = { Name }
+Options     = { Option ~ (whitespace ~ Option)* }
+Option      = { OptionKey ~ space ~ ":" ~ space ~ OptionValue }
+OptionKey   = { Name }
 OptionValue = { String }
 
-space = _{ (" " | "\t")* }
-whitespace = _{ (" " | "\t" | "\n" | "\r")* }
-NewLine = { "\n" | "\r" ~ "\n" }
+space             = _{ (" " | "\t")* }
+whitespace        = _{ (" " | "\t" | "\n" | "\r")* }
+NewLine           =  { "\n" | "\r" ~ "\n" }
 AlphaOrUnderscore = @{ ASCII_ALPHANUMERIC | "_" }
-AlphaOrUnderscoreArray = @{ AlphaOrUnderscore }

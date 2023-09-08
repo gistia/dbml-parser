@@ -16,14 +16,9 @@ fn main() {
         database_type: 'something'
     }
 
-    Table User {
+    Table order {
         id int [pk]
-        name varchar
-    }
-
-    Table Order {
-        id int [pk]
-        user_id int // ref: > User.id
+        patient_id int [ref: > patient.id]
     }
 
     Table patient {
