@@ -3,6 +3,8 @@ extern crate pest_derive;
 
 use pest::Parser;
 
+mod models;
+
 #[derive(Parser)]
 #[grammar = "dbml.pest"]
 pub struct DbmlParser;
@@ -15,18 +17,18 @@ fn main() {
     }
 
     Table User {
-        id int
+        id int [pk]
         name varchar
     }
 
     Table Order {
-        id int
+        id int [pk]
         user_id int // ref: > User.id
     }
 
     Table patient {
         id string [pk]
-        first_name string
+        first_name string [not null]
         last_name string
         address string
         city string
@@ -53,9 +55,22 @@ fn main() {
     }
     "#;
 
-    match DbmlParser::parse(Rule::File, dbml_str) {
-        Ok(parsed) => println!("{:#?}", parsed),
-        Err(e) => eprintln!("{}", e),
+    let mut file = match DbmlParser::parse(Rule::File, dbml_str) {
+        Ok(parsed) => parsed,
+        Err(e) => panic!("{}", e),
+    };
+
+    for pair in file.next().unwrap().into_inner() {
+        match pair.as_rule() {
+            Rule::Table => {
+                let table = models::Table::parse(pair);
+                println!("table: {:#?}", table);
+            }
+            Rule::Project => {
+                // pending
+            }
+            _ => (),
+        }
     }
 }
 
